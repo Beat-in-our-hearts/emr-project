@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMR: Extreme Motion Retargeting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#faf9f6; --ink:#363636; --ink-soft:#6b6b6b; --rule:#e4e1d9; --card:#ffffff;
+  --ours:#f1e9d9; --pill:#363636; --pill-ink:#ffffff; --accent:#2f6fb2; --accent2:#e0662f;
+  --chip:#f1efe9; --shadow:0 1px 3px rgb(0 0 0 / 10%);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--ink);font-family:'Noto Sans',sans-serif;font-size:16px;line-height:1.6}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.narrow{max-width:860px;margin:0 auto}
+h1,h2,h3{font-family:'Google Sans',sans-serif;font-weight:500;color:#292929;margin:0}
+section{padding:36px 0}
+h2.sec{font-size:2rem;text-align:center;margin-bottom:18px}
+h3.sub{font-size:1.15rem;text-align:center;color:var(--ink-soft);font-weight:400;margin:22px 0 12px}
+
+/* header */
+header{text-align:center;padding:42px 0 8px}
+.wordmark{font-family:'Google Sans',sans-serif;font-weight:700;font-size:5.2rem;letter-spacing:-.02em;line-height:1;
+  background:linear-gradient(100deg,#1d4f91 0%,#2f6fb2 35%,#e0662f 70%,#c43c2b 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.title{font-size:2.1rem;line-height:1.25;margin:10px auto 0;max-width:900px;color:#4a4a4a;font-weight:400}
+.authors{margin-top:16px;color:var(--accent);font-size:1.05rem}
+.affil{color:var(--ink-soft);font-size:.9rem;margin-top:4px}
+.links{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--pill);color:var(--pill-ink);border-radius:999px;padding:7px 16px;font:500 .95rem 'Google Sans',sans-serif;text-decoration:none}
+.pill svg{width:16px;height:16px;fill:currentColor}
+
+/* teaser */
+.teaser{margin-top:26px;border-radius:6px;overflow:hidden;background:#1f1f22;box-shadow:var(--shadow)}
+.teaser img{display:block;width:100%}
+.teaser .placeholder{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:#f4f4f2}
+.teaser .placeholder img{aspect-ratio:4/3;object-fit:cover;background:#f4f4f2}
+.tldr{margin:14px 0 0;font-size:.98rem}
+.tldr b{font-family:'Google Sans',sans-serif}
+
+/* speed strip */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+.stat{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:14px 14px 12px;text-align:center}
+.stat .num{font:700 1.9rem/1.1 'Google Sans',sans-serif;color:#292929}
+.stat .num small{font-size:1rem;font-weight:500;color:var(--ink-soft)}
+.stat .lbl{font-size:.82rem;color:var(--ink-soft);margin-top:4px}
+
+/* news */
+.news{list-style:none;padding:0;margin:0}
+.news li{padding:6px 0;border-bottom:1px dashed var(--rule)}
+.news b{font-family:'Roboto Mono',monospace;font-weight:500;font-size:.9rem;margin-right:8px}
+
+.video-ph{aspect-ratio:16/9;background:#292929;border-radius:6px;display:grid;place-items:center;color:#aaa69d;font-family:'Roboto Mono',monospace}
+p.just{text-align:justify}
+figure{margin:0}
+figcaption{font-size:.9rem;color:var(--ink-soft);margin-top:8px;text-align:justify}
+.fig-card{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:10px}
+.fig-card img{display:block;width:100%}
+
+/* tabs */
+.tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:6px 0 4px}
+.tab{border:1px solid var(--rule);background:var(--chip);color:var(--ink);border-radius:999px;padding:6px 16px;font:500 .95rem 'Google Sans',sans-serif;cursor:pointer}
+.tab.on{background:var(--pill);color:#fff;border-color:var(--pill)}
+.tabs.small .tab{padding:3px 12px;font-size:.85rem;background:#fff}
+.tabs.small .tab.on{background:#4a4a4a;border-color:#4a4a4a}
+.task-tabs{position:sticky;top:0;z-index:5;background:rgb(250 249 246 / 92%);backdrop-filter:blur(4px);padding:10px 0;border-bottom:1px solid var(--rule)}
+.pane{display:none}.pane.on{display:block}
+
+/* method grid (loco stills) */
+.cmp{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{background:var(--card);border-radius:6px;box-shadow:var(--shadow);overflow:hidden}
+.card img,.card video{display:block;width:100%;background:#f4f4f2}
+.card .cap{font-size:.85rem;text-align:center;padding:6px 6px 8px;color:#4a4a4a}
+.card.ours{outline:2px solid var(--accent2);outline-offset:-2px}
+.card.ours .cap{font-weight:600;color:#292929}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.wide .cap{text-align:left;padding-left:10px}
+.methods-row{display:flex;justify-content:space-between;font:500 .72rem 'Roboto Mono',monospace;color:var(--ink-soft);padding:6px 6px 0;gap:4px}
+.methods-row span{flex:1;text-align:center}
+.methods-row span.o{color:var(--accent2)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;margin-top:6px}
+table.res{border-collapse:collapse;width:100%;font-size:.86rem;background:transparent}
+table.res caption{caption-side:top;font:500 1rem 'Google Sans',sans-serif;color:#292929;padding-bottom:8px}
+table.res th{font-weight:500;color:#4a4a4a;border-bottom:1px solid #8a8a8a;padding:6px 8px;text-align:center;white-space:nowrap}
+table.res th:first-child,table.res td:first-child{text-align:left}
+table.res td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums}
+table.res tr.ours td{background:var(--ours)}
+table.res tr.ours td:first-child{font-weight:600}
+table.res u{text-decoration-thickness:1px;text-underline-offset:2px}
+
+/* speed bars */
+.bars{max-width:760px;margin:0 auto}
+.bar{display:grid;grid-template-columns:150px 1fr 64px;align-items:center;gap:10px;margin:7px 0;font-size:.9rem}
+.bar .track{background:#f1efe9;border-radius:4px;height:18px;overflow:hidden}
+.bar .fill{height:100%;background:#aaa69d;border-radius:4px}
+.bar.o .fill{background:var(--accent2)}
+.bar.o .name{font-weight:600}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums}
+
+pre.bib{background:#f1efe9;border-radius:6px;padding:14px;font:13px/1.5 'Roboto Mono',monospace;overflow-x:auto}
+footer{text-align:center;color:var(--ink-soft);font-size:.8rem;padding:24px 0 40px}
+
+@media (max-width:760px){
+  .wordmark{font-size:3.4rem}.title{font-size:1.4rem}
+  .stats,.grid4,.cmp{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}
+  .teaser .placeholder{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="wordmark">EMR</div>
+  <h1 class="title">Extreme Motion Retargeting: High-Speed Constrained Kinematics for Humanoids and Dexterous Hands</h1>
+  <div class="authors">Author One<sup>1</sup> &nbsp; Author Two<sup>1</sup> &nbsp; Author Three<sup>2</sup> &nbsp; Author Four<sup>1</sup></div>
+  <div class="affil"><sup>1</sup>Institution A &nbsp; <sup>2</sup>Institution B</div>
+  <div class="links">
+    <a class="pill" href="#"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z" opacity=".9"/></svg>Paper</a>
+    <a class="pill" href="#"><svg viewBox="0 0 24 24"><path d="M4 4l16 16M20 4L4 20" stroke="currentColor" stroke-width="3"/></svg>arXiv</a>
+    <a class="pill" href="#"><svg viewBox="0 0 24 24"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" fill="none"/></svg>Code</a>
+    <a class="pill" href="#"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6c0 1.7-3.6 3-8 3S4 7.7 4 6z"/></svg>Data</a>
+  </div>
+
+  <div class="teaser" id="teaser">
+    <img src="assets/img/teaser_single.jpg" alt="EMR results in one scene: Unitree G1 and H2 locomotion and whole-body human-object interaction, SHARPA Wave and Unitree Dex5-1 hands with objects in front">
+  </div>
+  <p class="tldr" style="text-align:center"><b>TL;DR</b> One solver for humanoid locomotion, dexterous hands and whole-body human-object interaction.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="num">&mdash;</div><div class="lbl">Locomotion</div></div>
+    <div class="stat"><div class="num">&mdash;</div><div class="lbl">Dexterous hands</div></div>
+    <div class="stat"><div class="num">&mdash;</div><div class="lbl">Whole-body HOI</div></div>
+    <div class="stat"><div class="num">&mdash;</div><div class="lbl">30 M frames, BONES-SEED</div></div>
+  </div>
+</header>
+
+<section class="wrap narrow">
+  <h2 class="sec">News</h2>
+  <ul class="news">
+    <li>2026-xx-xx Code and retargeted datasets released.</li>
+    <li>2026-xx-xx Paper on arXiv.</li>
+  </ul>
+</section>
+
+<section class="wrap narrow">
+  <h2 class="sec">Demo Video</h2>
+  <div class="video-ph" style="font-size:3rem">&#9654;</div>
+</section>
+
+<section class="wrap narrow">
+  <h2 class="sec">Abstract</h2>
+  <p class="just">Transferring human demonstrations to humanoid robots spans whole-body locomotion, dexterous hand-object manipulation and whole-body human-object interaction. We present Extreme Motion Retargeting (EMR), a unified constrained-kinematics framework that solves all three with the same per-frame elastic quadratic programs, fast enough to retarget large datasets on a single CPU.</p>
+</section>
+
+<section class="wrap">
+  <h2 class="sec">Method overview</h2>
+  <figure class="fig-card"><img src="assets/img/framework.jpg" alt="EMR framework">
+  </figure>
+</section>
+
+<div class="task-tabs" id="results">
+  <div class="tabs" data-group="task">
+    <button class="tab on" data-pane="p-loco">Locomotion</button>
+    <button class="tab" data-pane="p-dex">Dexterous hands</button>
+    <button class="tab" data-pane="p-hoi">Human-object interaction</button>
+    <button class="tab" data-pane="p-speed">Speed</button>
+  </div>
+</div>
+
+<!-- ============ LOCOMOTION ============ -->
+<section class="wrap pane on" id="p-loco">
+  <h2 class="sec">Locomotion retargeting</h2>
+  <h3 class="sub">Comparison with baselines</h3>
+  <div class="tabs small" id="loco-clips"></div>
+  <div class="cmp" id="loco-grid" style="margin-top:12px"></div>
+
+  <h3 class="sub">Video results</h3>
+  <div class="grid4">
+    <div class="card"><img src="assets/img/t_loco_g1_kick.jpg" alt=""><div class="cap">Kick</div></div>
+    <div class="card"><img src="assets/img/t_loco_g1_stretch.jpg" alt=""><div class="cap">Stretch</div></div>
+    <div class="card"><img src="assets/img/t_loco_h2_highjump.jpg" alt=""><div class="cap">High jump</div></div>
+    <div class="card"><img src="assets/img/t_loco_h2_fall.jpg" alt=""><div class="cap">Fall</div></div>
+  </div>
+
+  <h3 class="sub">Quantitative results</h3>
+  <div class="tbl-wrap">
+  <table class="res">
+    <caption>LAFAN1, Unitree G1</caption>
+    <thead><tr><th>Method</th><th>MPJPE &darr;</th><th>g-MPJPE &darr;</th><th>Foot pen. &darr;</th><th>Float &darr;</th><th>Slide &darr;</th><th>Self-pen. &darr;</th><th>FPS &uarr;</th></tr></thead>
+    <tbody>
+      <tr class="ours"><td>EMR (SOMA)</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td></tr>
+      <tr class="ours"><td>EMR (SMPL-X)</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td></tr>
+      <tr><td>GMR</td><td>96.7</td><td>770.5</td><td>19.3</td><td>29.8</td><td>10.3</td><td>3.41</td><td>620</td></tr>
+      <tr><td>UMR</td><td>60.8</td><td>71.6</td><td>1.04</td><td>0.09</td><td>12.2</td><td>1.25</td><td>112</td></tr>
+      <tr><td>ProtoMotions</td><td>74.9</td><td>862.4</td><td>31.5</td><td>25.4</td><td>17.7</td><td>9.42</td><td>312</td></tr>
+      <tr><td>PHC</td><td>108.6</td><td>1288.7</td><td>&lt;0.01</td><td>99.8</td><td>53.9</td><td>1.24</td><td>50</td></tr>
+      <tr><td>OmniRetarget</td><td>57.9</td><td>143.8</td><td>2.49</td><td>1.58</td><td>10.8</td><td>6.09</td><td>4.0</td></tr>
+      <tr><td>SOMA-Retargeter</td><td>58.7</td><td>292.9</td><td>65.9</td><td>0.03</td><td>5.5</td><td>6.18</td><td>34</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ DEXTEROUS ============ -->
+<section class="wrap pane" id="p-dex">
+  <h2 class="sec">Dexterous hand retargeting</h2>
+  <div class="tabs small" id="dex-hand">
+    <button class="tab on" data-hand="sharpa">SHARPA Wave</button>
+    <button class="tab" data-hand="dex5">Unitree Dex5-1</button>
+  </div>
+  <h3 class="sub">Comparison with baselines</h3>
+  <div class="card wide">
+    <div class="methods-row"><span>Human (MANO)</span><span class="o">EMR hand mesh</span><span class="o">EMR keypoints</span><span>DexPilot</span><span>AnyTeleop-K</span><span>GeoRT</span><span>TopoRetarget</span><span>OmniRetarget</span></div>
+    <video id="dex-main" muted loop playsinline autoplay preload="metadata" poster="assets/video/dex_sharpa_grab_scissors.jpg" src="assets/video/dex_sharpa_grab_scissors.mp4"></video>
+  </div>
+  <div class="tabs small" id="dex-clips" style="margin-top:10px"></div>
+
+  <h3 class="sub">Quantitative results</h3>
+  <div class="tbl-wrap">
+  <table class="res" id="dex-table">
+    <caption id="dex-cap"></caption>
+    <thead><tr><th>Method</th><th>Contact@2 &uarr;</th><th>Contact@5 &uarr;</th><th>F1 &uarr;</th><th>Max pen. &darr;</th><th>Pen. frames &darr;</th><th>FPS &uarr;</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ HOI ============ -->
+<section class="wrap pane" id="p-hoi">
+  <h2 class="sec">Whole-body human-object interaction</h2>
+  <h3 class="sub">Four robots, one clip</h3>
+  <div class="grid2" id="hoi-robots"></div>
+
+  <h3 class="sub">Comparison with baselines</h3>
+  <div class="grid2">
+    <div class="card wide"><video muted loop playsinline preload="none" poster="assets/video/hoi_base_cup_drink.jpg" data-src="assets/video/hoi_base_cup_drink.mp4"></video><div class="cap">Drink from a cup</div></div>
+    <div class="card wide"><video muted loop playsinline preload="none" poster="assets/video/hoi_base_mug_pass.jpg" data-src="assets/video/hoi_base_mug_pass.mp4"></video><div class="cap">Pass a mug</div></div>
+  </div>
+
+  <h3 class="sub">Quantitative results</h3>
+  <div class="tbl-wrap">
+  <table class="res">
+    <caption>GRAB, G1 + SHARPA Wave</caption>
+    <thead><tr><th>Method</th><th>Contact@2 &uarr;</th><th>Contact@5 &uarr;</th><th>Pen. frames &darr;</th><th>Max pen. &darr;</th><th>Body acc. &darr;</th><th>Success &uarr;</th><th>FPS &uarr;</th></tr></thead>
+    <tbody>
+      <tr class="ours"><td>EMR</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td></tr>
+      <tr><td>HOI-Retarget</td><td>15.3</td><td>24.0</td><td>74.1</td><td>36.3</td><td>2.33</td><td>0 / 32</td><td>10.0</td></tr>
+      <tr><td>OmniRetarget</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>6.05</td><td>0 / 32</td><td>0.5</td></tr>
+      <tr><td>RoboKit</td><td>8.8</td><td>12.4</td><td>72.7</td><td>36.2</td><td>75.68</td><td>0 / 32</td><td>2.0</td></tr>
+      <tr><td>OTRetarget (unofficial)</td><td>21.2</td><td>42.2</td><td>23.0</td><td>7.0</td><td>29.94</td><td>0 / 32</td><td>0.7</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ SPEED ============ -->
+<section class="wrap pane" id="p-speed">
+  <h2 class="sec">Speed</h2>
+  <h3 class="sub">Frames per second, LAFAN1, Unitree G1</h3>
+  <div class="bars" id="bars"></div>
+</section>
+
+<section class="wrap narrow">
+  <h2 class="sec">Citation</h2>
+<pre class="bib">@article{emr2026,
+  title   = {Extreme Motion Retargeting: High-Speed Constrained Kinematics
+             for Humanoids and Dexterous Hands},
+  author  = {Author One and Author Two and Author Three and Author Four},
+  journal = {arXiv},
+  year    = {2026}
+}</pre>
+</section>
+<footer></footer>
+
+<script>
+// Tabs for the task panes.
+document.querySelectorAll('.tabs[data-group="task"] .tab').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tabs[data-group="task"] .tab').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === b.dataset.pane));
+  observeVideos();
+});
+
+// Locomotion: same frame, eight methods.
+const LOCO_METHODS = [['human','Human (SOMA)'],['emr','EMR (ours)'],['gmr','GMR'],['omni','OmniRetarget'],['phc','PHC'],['proto','ProtoMotions'],['somart','SOMA-Retargeter'],['umr','UMR']];
+const LOCO_CLIPS = [['carry','Carry'],['crouch','Crouch'],['armsback','Arms back'],['fall','Fall'],['jump','Jump'],['sit','Sit'],['sprint','Sprint'],['walk','Walk']];
+function showLoco(c){
+  document.getElementById('loco-grid').innerHTML = LOCO_METHODS.map(([k,n]) =>
+    `<div class="card${k==='emr'?' ours':''}"><img loading="lazy" src="assets/img/loco_${c}_${k}.jpg" alt=""><div class="cap">${n}</div></div>`).join('');
+  document.querySelectorAll('#loco-clips .tab').forEach(t => t.classList.toggle('on', t.dataset.c === c));
+}
+document.getElementById('loco-clips').innerHTML = LOCO_CLIPS.map(([k,n]) => `<button class="tab" data-c="${k}">${n}</button>`).join('');
+document.querySelectorAll('#loco-clips .tab').forEach(t => t.onclick = () => showLoco(t.dataset.c));
+showLoco('carry');
+
+// Dexterous: hand switch changes clips and table.
+const DEX = {
+  sharpa: {clips: [['dex_sharpa_grab_scissors','GRAB: scissors'],['dex_sharpa_grab_fryingpan','GRAB: frying pan'],['dex_sharpa_arctic_espresso','ARCTIC: espresso machine'],['dex_sharpa_oakink2_lid','OakInk2: put on lid']],
+    cap: 'GRAB, SHARPA Wave',
+    rows: [['EMR (hand mesh)',1,'&ndash;','&ndash;','&ndash;','&ndash;','&ndash;','&ndash;'],['EMR (keypoints)',1,'&ndash;','&ndash;','&ndash;','&ndash;','&ndash;','&ndash;'],
+      ['DexPilot',0,'0.6','0.8','19.3','11.5','36.9','517'],['AnyTeleop-K',0,'0.7','1.1','12.9','9.3','32.1','682'],['AnyTeleop-P',0,'16.0','35.1','54.6','11.4','42.1','968'],
+      ['GeoRT',0,'0.5','1.0','18.3','13.5','42.2','4,648'],['TopoRetarget',0,'8.9','30.5','48.9','1.2','0.1','21'],['OmniRetarget',0,'14.2','43.8','52.8','1.0','1.5','4']]},
+  dex5: {clips: [['dex_dex5_grab_eyeglasses','GRAB: eyeglasses'],['dex_dex5_grab_pyramid','GRAB: pyramid'],['dex_dex5_oakink2_place','OakInk2: place inside']],
+    cap: 'GRAB, Unitree Dex5-1',
+    rows: [['EMR (hand mesh)',1,'&ndash;','&ndash;','&ndash;','&ndash;','&ndash;','&ndash;'],['EMR (keypoints)',1,'&ndash;','&ndash;','&ndash;','&ndash;','&ndash;','&ndash;'],
+      ['DexPilot',0,'11.9','18.6','53.3','11.6','48.9','471'],['AnyTeleop-K',0,'14.6','31.7','58.1','10.4','47.6','741'],['AnyTeleop-P',0,'11.7','23.4','55.9','13.6','46.4','983'],
+      ['GeoRT',0,'2.9','5.0','31.2','17.6','52.3','4,736'],['TopoRetarget',0,'5.9','21.9','44.0','1.3','0.1','5'],['OmniRetarget',0,'11.1','38.8','53.1','1.0','1.6','4']]}
+};
+function setDexClip(id){
+  const v = document.getElementById('dex-main');
+  v.poster = `assets/video/${id}.jpg`; v.src = `assets/video/${id}.mp4`; v.play().catch(()=>{});
+  document.querySelectorAll('#dex-clips .tab').forEach(t => t.classList.toggle('on', t.dataset.id === id));
+}
+function setHand(h){
+  const d = DEX[h];
+  document.querySelectorAll('#dex-hand .tab').forEach(t => t.classList.toggle('on', t.dataset.hand === h));
+  document.getElementById('dex-clips').innerHTML = d.clips.map(([id,n]) => `<button class="tab" data-id="${id}">${n}</button>`).join('');
+  document.querySelectorAll('#dex-clips .tab').forEach(t => t.onclick = () => setDexClip(t.dataset.id));
+  document.getElementById('dex-cap').textContent = d.cap;
+  document.querySelector('#dex-table tbody').innerHTML = d.rows.map(r => `<tr${r[1]?' class="ours"':''}><td>${r[0]}</td>${r.slice(2).map(x=>`<td>${x}</td>`).join('')}</tr>`).join('');
+  setDexClip(d.clips[0][0]);
+}
+document.querySelectorAll('#dex-hand .tab').forEach(t => t.onclick = () => setHand(t.dataset.hand));
+setHand('sharpa');
+
+// HOI: one clip, four robots.
+const HOI = [['s1_cup_drink_1','Drink from a cup'],['s1_teapot_pour_1','Pour from a teapot'],['s1_toothpaste_squeeze_1','Squeeze toothpaste'],['s1_eyeglasses_wear_1','Put on eyeglasses'],['s1_phone_call_1','Phone call'],['s1_stapler_staple_1','Staple'],['arctic_s01_laptop_use_03','Use a laptop'],['arctic_s02_espressomachine_use_02','Use an espresso machine']];
+document.getElementById('hoi-robots').innerHTML = HOI.map(([k,n]) =>
+  `<div class="card wide"><video muted loop playsinline preload="none" poster="assets/video/hoi_robots4_${k}.jpg" data-src="assets/video/hoi_robots4_${k}.mp4"></video><div class="cap">${n}</div></div>`).join('');
+
+// Speed bars, log scale.
+const SPEED = [['EMR',null,1],['GMR',620],['ProtoMotions',312],['UMR',112],['PHC',50],['SOMA-Retargeter',34],['OmniRetarget',4.0]];
+const lo = Math.log10(1), hi = Math.log10(3000);
+document.getElementById('bars').innerHTML = SPEED.map(([n,v,o]) =>
+  `<div class="bar${o?' o':''}"><span class="name">${n}</span><div class="track"><div class="fill" style="width:${v?(100*(Math.log10(v)-lo)/(hi-lo)).toFixed(1):0}%"></div></div><span class="v">${v?v.toLocaleString('en'):'&ndash;'}</span></div>`).join('');
+
+// Lazy videos: load and play only while on screen.
+const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => {
+  const v = e.target;
+  if (e.isIntersecting){ if (v.dataset.src && !v.src) v.src = v.dataset.src; v.play().catch(()=>{}); }
+  else v.pause();
+}), {rootMargin:'200px'}) : null;
+function observeVideos(){ if (io) document.querySelectorAll('video[data-src]').forEach(v => io.observe(v)); }
+observeVideos();
+</script>
+</body>
+</html>
