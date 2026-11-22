@@ -35,7 +35,8 @@ header{text-align:center;padding:42px 0 8px}
 
 /* teaser */
 .teaser{margin-top:26px;border-radius:6px;overflow:hidden;background:#1f1f22;box-shadow:var(--shadow)}
-.teaser img{display:block;width:100%}
+.teaser img,.teaser video{display:block;width:100%}
+.teaser video{aspect-ratio:16/9;background:#1f1f22}
 .teaser .placeholder{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:#f4f4f2}
 .teaser .placeholder img{aspect-ratio:4/3;object-fit:cover;background:#f4f4f2}
 .tldr{margin:14px 0 0;font-size:.98rem}
@@ -129,7 +130,7 @@ footer{text-align:center;color:var(--ink-soft);font-size:.8rem;padding:24px 0 40
   </div>
 
   <div class="teaser" id="teaser">
-    <img src="assets/img/teaser_single.jpg" alt="EMR results in one scene: Unitree G1 and H2 locomotion and whole-body human-object interaction, SHARPA Wave and Unitree Dex5-1 hands with objects in front">
+    <video src="assets/video/demo.mp4" poster="assets/video/demo_poster.jpg" muted loop playsinline autoplay preload="auto" aria-label="EMR results in one scene: Unitree G1 and H2 locomotion, whole-body human-object interaction, and SHARPA Wave and Unitree Dex5-1 hands with objects"></video>
   </div>
   <p class="tldr" style="text-align:center"><b>TL;DR</b> One solver for humanoid locomotion, dexterous hands and whole-body human-object interaction.</p>
 
