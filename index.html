@@ -79,6 +79,10 @@ figcaption{font-size:calc(.9rem + 4pt);color:var(--ink-soft);margin-top:8px;text
 .tabs.small .tab.on{background:#4a4a4a;border-color:#4a4a4a}
 .task-tabs{position:sticky;top:0;z-index:5;background:rgb(250 249 246 / 92%);backdrop-filter:blur(4px);padding:10px 0;border-bottom:1px solid var(--rule)}
 .pane{display:none}.pane.on{display:block}
+/* clip picker: one row of chips per dataset, the dataset name leading the row */
+.picker{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:12px}
+.picker .row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px}
+.picker .grp{font:600 calc(.72rem + 4pt) 'Google Sans',sans-serif;color:var(--ink-soft);margin-right:4px;letter-spacing:.02em}
 
 /* method grid (loco stills) */
 .cmp{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -118,6 +122,10 @@ pre.bib{background:#f1efe9;border-radius:6px;padding:14px;font:calc(13px + 4pt)/
 footer{text-align:center;color:var(--ink-soft);font-size:calc(.8rem + 4pt);padding:24px 0 40px}
 
 @media (max-width:760px){
+  /* phones: one swipeable chip row per dataset; method names above the videos in a smaller size so they fit their columns */
+  .picker{align-items:stretch;width:100%}.picker .row{max-width:100%;min-width:0;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .picker .row .tab{flex:none}.picker .grp{flex:none;min-width:58px}
+  .methods-row{font-size:.62rem;padding:4px 2px 0;gap:2px}
   .bar{grid-template-columns:1fr 56px;gap:2px 10px;margin:10px 0}.bar .name{grid-column:1/-1}
   section.wrap{padding-top:52px;padding-bottom:52px}section.wrap.pane{padding-top:36px}h3.sub{margin-top:40px}
   .wordmark{font-size:calc(3.4rem + 4pt)}.title{font-size:calc(1.4rem + 4pt)}
@@ -255,14 +263,14 @@ footer{text-align:center;color:var(--ink-soft);font-size:calc(.8rem + 4pt);paddi
     <div class="methods-row"><span>Human (SMPL-X, MANO)</span><span class="o">G1 + SHARPA Wave</span><span class="o">G1 + Dex5-1</span><span class="o">H2 + SHARPA Wave</span><span class="o">H2 + Dex5-1</span></div>
     <video id="hoi-main" muted loop playsinline preload="none" poster="assets/video/hoi_robots4_s1_cup_drink_1.jpg" data-src="assets/video/hoi_robots4_s1_cup_drink_1.mp4"></video>
   </div>
-  <div class="tabs small" id="hoi-clips" style="margin-top:10px"></div>
+  <div class="picker tabs small" id="hoi-clips"></div>
 
   <h3 class="sub">Comparison with baselines</h3>
   <div class="card wide">
     <div class="methods-row"><span>Human (SMPL-X, MANO)</span><span class="o">EMR</span><span>HOI-Retarget</span><span>OmniRetarget</span><span>OTRetarget (unofficial)</span></div>
     <video id="hoi-base" muted loop playsinline preload="none" poster="assets/video/hoi_base_s1_cup_drink_1.jpg" data-src="assets/video/hoi_base_s1_cup_drink_1.mp4"></video>
   </div>
-  <div class="tabs small" id="hoi-base-clips" style="margin-top:10px"></div>
+  <div class="picker tabs small" id="hoi-base-clips"></div>
 
   <h3 class="sub">Quantitative results</h3>
   <div class="tbl-wrap">
@@ -353,23 +361,33 @@ function setHand(h){
 document.querySelectorAll('#dex-hand .tab').forEach(t => t.onclick = () => setHand(t.dataset.hand));
 setHand('sharpa');
 
-// HOI: one clip at a time (as the dexterous section), four robots / EMR against the baselines.
-const HOI = [['s1_cup_drink_1','GRAB: drink from a cup'],['s1_teapot_pour_1','GRAB: pour from a teapot'],['s1_toothpaste_squeeze_1','GRAB: squeeze toothpaste'],['s1_eyeglasses_wear_1','GRAB: put on eyeglasses'],['s1_phone_call_1','GRAB: phone call'],['s1_stapler_staple_1','GRAB: staple'],['arctic_s01_laptop_use_03','ARCTIC: use a laptop'],['arctic_s02_espressomachine_use_02','ARCTIC: use an espresso machine']];
-const HOI_BASE = [['s1_cup_drink_1','GRAB: drink from a cup'],['s1_mug_pass_1','GRAB: pass a mug']];
-function hoiTabs(tabsId, videoId, prefix, clips){
+// Clip picker: items are [file stem, dataset, label]; one chip row per dataset; the chosen clip plays in one video.
+function clipPicker(pickerId, videoId, prefix, items){
+  const v = document.getElementById(videoId), box = document.getElementById(pickerId);
   const set = id => {
-    const v = document.getElementById(videoId);
     v.poster = `assets/video/${prefix}${id}.jpg`;
     v.dataset.src = `assets/video/${prefix}${id}.mp4`;
-    if (v.src) { v.src = v.dataset.src; v.play().catch(()=>{}); }
-    document.querySelectorAll(`#${tabsId} .tab`).forEach(t => t.classList.toggle('on', t.dataset.id === id));
+    if (v.src || v.autoplay) { v.src = v.dataset.src; v.play().catch(()=>{}); }
+    box.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.id === id));
   };
-  document.getElementById(tabsId).innerHTML = clips.map(([id,n]) => `<button class="tab" data-id="${id}">${n}</button>`).join('');
-  document.querySelectorAll(`#${tabsId} .tab`).forEach(t => t.onclick = () => set(t.dataset.id));
-  set(clips[0][0]);
+  const groups = [...new Set(items.map(i => i[1]))];
+  box.innerHTML = groups.map(g => `<div class="row"><span class="grp">${g}</span>` +
+    items.filter(i => i[1] === g).map(([id,,n]) => `<button class="tab" data-id="${id}">${n}</button>`).join('') + '</div>').join('');
+  box.querySelectorAll('.tab').forEach(t => t.onclick = () => set(t.dataset.id));
+  set(items[0][0]);
 }
-hoiTabs('hoi-clips', 'hoi-main', 'hoi_robots4_', HOI);
-hoiTabs('hoi-base-clips', 'hoi-base', 'hoi_base_', HOI_BASE);
+
+// HOI: four robots on the 17 real-size clips; EMR against the baselines.
+const HOI = [['s1_cup_drink_1','GRAB','drink from a cup'],['s1_teapot_pour_1','GRAB','pour from a teapot'],['s1_toothpaste_squeeze_1','GRAB','squeeze toothpaste'],
+  ['s1_eyeglasses_wear_1','GRAB','put on eyeglasses'],['s1_phone_call_1','GRAB','phone call'],['s1_stapler_staple_1','GRAB','staple'],
+  ['s1_camera_pass_1','GRAB','pass a camera'],['s1_mug_pass_1','GRAB','pass a mug'],['s1_spheresmall_lift','GRAB','lift a small ball'],
+  ['s1_waterbottle_pass_1','GRAB','pass a water bottle'],['s1_wineglass_offhand_1','GRAB','hand over a wine glass'],
+  ['arctic_s01_laptop_use_03','ARCTIC','use a laptop'],['arctic_s02_espressomachine_use_02','ARCTIC','use an espresso machine'],
+  ['arctic_s01_ketchup_use_02','ARCTIC','squeeze ketchup'],['arctic_s01_microwave_grab_01','ARCTIC','hold a microwave'],
+  ['arctic_s01_microwave_use_01','ARCTIC','open a microwave'],['arctic_s01_scissors_use_02','ARCTIC','use scissors']];
+const HOI_BASE = [['s1_cup_drink_1','GRAB','drink from a cup'],['s1_mug_pass_1','GRAB','pass a mug']];
+clipPicker('hoi-clips', 'hoi-main', 'hoi_robots4_', HOI);
+clipPicker('hoi-base-clips', 'hoi-base', 'hoi_base_', HOI_BASE);
 
 // Speed bars: one log scale shared by the three tasks (EMR left blank for now).
 const SPEED = {
