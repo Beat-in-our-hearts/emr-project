@@ -239,10 +239,10 @@ footer{text-align:center;color:var(--ink-soft);font-size:calc(.8rem + 4pt);paddi
   </div>
   <h3 class="sub">Comparison with baselines</h3>
   <div class="card wide">
-    <div class="methods-row"><span>Human (MANO)</span><span class="o">EMR hand mesh</span><span class="o">EMR keypoints</span><span>DexPilot</span><span>AnyTeleop-K</span><span>GeoRT</span><span>TopoRetarget</span><span>OmniRetarget</span></div>
+    <div class="methods-row"><span>Human (MANO)</span><span class="o">EMR hand mesh</span><span class="o">EMR keypoints</span><span>DexPilot</span><span>AnyTeleop-K</span><span>GeoRT</span><span>TopoRetarget</span><span id="dex-omni">OmniRetarget</span></div>
     <video id="dex-main" muted loop playsinline autoplay preload="metadata" poster="assets/video/dex_sharpa_grab_scissors.jpg" src="assets/video/dex_sharpa_grab_scissors.mp4"></video>
   </div>
-  <div class="tabs small" id="dex-clips" style="margin-top:10px"></div>
+  <div class="picker tabs small" id="dex-clips"></div>
 
   <h3 class="sub">Quantitative results</h3>
   <div class="tbl-wrap">
@@ -332,42 +332,58 @@ showLoco('carry');
 
 // Dexterous: hand switch changes clips and table.
 const DEX = {
-  sharpa: {clips: [['dex_sharpa_grab_scissors','GRAB: scissors'],['dex_sharpa_grab_fryingpan','GRAB: frying pan'],['dex_sharpa_arctic_espresso','ARCTIC: espresso machine'],['dex_sharpa_oakink2_lid','OakInk2: put on lid']],
+  sharpa: {clips: [["dex_sharpa_grab_scissors", "GRAB", "scissors"],
+    ["dex_sharpa_grab_fryingpan", "GRAB", "frying pan"],
+    ["dex_sharpa_grab_hammer", "GRAB", "hammer"],
+    ["dex_sharpa_grab_teapot", "GRAB", "pour from a teapot"],
+    ["dex_sharpa_grab_flashlight", "GRAB", "flashlight"],
+    ["dex_sharpa_grab_wineglass", "GRAB", "drink from a wine glass"],
+    ["dex_sharpa_arctic_espresso", "ARCTIC", "espresso machine", 1],
+    ["dex_sharpa_arctic_laptop", "ARCTIC", "laptop", 1],
+    ["dex_sharpa_oakink2_lid", "OakInk2", "put on lid"],
+    ["dex_sharpa_oakink2_pour", "OakInk2", "pour"]],
     cap: 'GRAB, SHARPA Wave',
     rows: [['EMR (hand mesh)',1,'&ndash;','&ndash;','&ndash;','&ndash;','&ndash;','&ndash;'],['EMR (keypoints)',1,'&ndash;','&ndash;','&ndash;','&ndash;','&ndash;','&ndash;'],
       ['DexPilot',0,'0.6','0.8','19.3','11.5','36.9','517'],['AnyTeleop-K',0,'0.7','1.1','12.9','9.3','32.1','682'],['AnyTeleop-P',0,'16.0','35.1','54.6','11.4','42.1','968'],
       ['GeoRT',0,'0.5','1.0','18.3','13.5','42.2','4,648'],['TopoRetarget',0,'8.9','30.5','48.9','1.2','0.1','21'],['OmniRetarget',0,'14.2','43.8','52.8','1.0','1.5','4']]},
-  dex5: {clips: [['dex_dex5_grab_eyeglasses','GRAB: eyeglasses'],['dex_dex5_grab_pyramid','GRAB: pyramid'],['dex_dex5_oakink2_place','OakInk2: place inside']],
+  dex5: {clips: [["dex_dex5_grab_eyeglasses", "GRAB", "eyeglasses"],
+    ["dex_dex5_grab_pyramid", "GRAB", "pyramid"],
+    ["dex_dex5_grab_stapler", "GRAB", "stapler"],
+    ["dex_dex5_grab_toothpaste", "GRAB", "squeeze toothpaste"],
+    ["dex_dex5_grab_mug", "GRAB", "mug"],
+    ["dex_dex5_grab_binoculars", "GRAB", "binoculars"],
+    ["dex_dex5_arctic_ketchup", "ARCTIC", "ketchup bottle", 1],
+    ["dex_dex5_arctic_waffleiron", "ARCTIC", "waffle iron", 1],
+    ["dex_dex5_oakink2_place", "OakInk2", "place inside"],
+    ["dex_dex5_oakink2_beaker", "OakInk2", "heat a beaker"]],
     cap: 'GRAB, Unitree Dex5-1',
     rows: [['EMR (hand mesh)',1,'&ndash;','&ndash;','&ndash;','&ndash;','&ndash;','&ndash;'],['EMR (keypoints)',1,'&ndash;','&ndash;','&ndash;','&ndash;','&ndash;','&ndash;'],
       ['DexPilot',0,'11.9','18.6','53.3','11.6','48.9','471'],['AnyTeleop-K',0,'14.6','31.7','58.1','10.4','47.6','741'],['AnyTeleop-P',0,'11.7','23.4','55.9','13.6','46.4','983'],
       ['GeoRT',0,'2.9','5.0','31.2','17.6','52.3','4,736'],['TopoRetarget',0,'5.9','21.9','44.0','1.3','0.1','5'],['OmniRetarget',0,'11.1','38.8','53.1','1.0','1.6','4']]}
 };
-function setDexClip(id){
-  const v = document.getElementById('dex-main');
-  v.poster = `assets/video/${id}.jpg`; v.src = `assets/video/${id}.mp4`; v.play().catch(()=>{});
-  document.querySelectorAll('#dex-clips .tab').forEach(t => t.classList.toggle('on', t.dataset.id === id));
-}
 function setHand(h){
   const d = DEX[h];
   document.querySelectorAll('#dex-hand .tab').forEach(t => t.classList.toggle('on', t.dataset.hand === h));
-  document.getElementById('dex-clips').innerHTML = d.clips.map(([id,n]) => `<button class="tab" data-id="${id}">${n}</button>`).join('');
-  document.querySelectorAll('#dex-clips .tab').forEach(t => t.onclick = () => setDexClip(t.dataset.id));
+  // OmniRetarget was not run on ARCTIC (articulated objects): its column is empty there
+  clipPicker('dex-clips', 'dex-main', '', d.clips, id => {
+    const c = d.clips.find(x => x[0] === id);
+    document.getElementById('dex-omni').textContent = c && c[3] ? 'OmniRetarget (not run on ARCTIC)' : 'OmniRetarget';
+  });
   document.getElementById('dex-cap').textContent = d.cap;
   document.querySelector('#dex-table tbody').innerHTML = d.rows.map(r => `<tr${r[1]?' class="ours"':''}><td>${r[0]}</td>${r.slice(2).map(x=>`<td>${x}</td>`).join('')}</tr>`).join('');
-  setDexClip(d.clips[0][0]);
 }
 document.querySelectorAll('#dex-hand .tab').forEach(t => t.onclick = () => setHand(t.dataset.hand));
 setHand('sharpa');
 
 // Clip picker: items are [file stem, dataset, label]; one chip row per dataset; the chosen clip plays in one video.
-function clipPicker(pickerId, videoId, prefix, items){
+function clipPicker(pickerId, videoId, prefix, items, onSet){
   const v = document.getElementById(videoId), box = document.getElementById(pickerId);
   const set = id => {
     v.poster = `assets/video/${prefix}${id}.jpg`;
     v.dataset.src = `assets/video/${prefix}${id}.mp4`;
     if (v.src || v.autoplay) { v.src = v.dataset.src; v.play().catch(()=>{}); }
     box.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.id === id));
+    if (onSet) onSet(id);
   };
   const groups = [...new Set(items.map(i => i[1]))];
   box.innerHTML = groups.map(g => `<div class="row"><span class="grp">${g}</span>` +
