@@ -204,13 +204,12 @@ footer{text-align:center;color:var(--ink-soft);font-size:calc(.8rem + 4pt);paddi
   <div class="tabs small" id="loco-clips"></div>
   <div class="cmp" id="loco-grid" style="margin-top:12px"></div>
 
-  <h3 class="sub">Video results</h3>
-  <div class="grid4">
-    <div class="card"><img src="assets/img/t_loco_g1_kick.jpg" alt=""><div class="cap">Kick</div></div>
-    <div class="card"><img src="assets/img/t_loco_g1_stretch.jpg" alt=""><div class="cap">Stretch</div></div>
-    <div class="card"><img src="assets/img/t_loco_h2_highjump.jpg" alt=""><div class="cap">High jump</div></div>
-    <div class="card"><img src="assets/img/t_loco_h2_fall.jpg" alt=""><div class="cap">Fall</div></div>
+  <h3 class="sub">Two robots, one clip</h3>
+  <div class="card wide">
+    <div class="methods-row"><span>Human (SOMA)</span><span class="o">Unitree G1</span><span class="o">Unitree H2</span></div>
+    <video id="loco-main" muted loop playsinline preload="none" poster="assets/video/loco_lafan1_dance.jpg" data-src="assets/video/loco_lafan1_dance.mp4"></video>
   </div>
+  <div class="picker tabs small" id="loco-vids"></div>
 
   <h3 class="sub">Quantitative results</h3>
   <div class="tbl-wrap">
@@ -387,6 +386,29 @@ const HOI = [['s1_cup_drink_1','GRAB','drink from a cup'],['s1_teapot_pour_1','G
   ['arctic_s01_microwave_use_01','ARCTIC','open a microwave'],['arctic_s01_scissors_use_02','ARCTIC','use scissors']];
 const HOI_BASE = [['s1_cup_drink_1','GRAB','drink from a cup'],['s1_mug_pass_1','GRAB','pass a mug']];
 clipPicker('hoi-clips', 'hoi-main', 'hoi_robots4_', HOI);
+
+// Locomotion: SOMA human, G1 and H2 (EMR) on one clip.
+const LOCO_VIDS = [["lafan1_dance", "LAFAN1", "dance"],
+  ["lafan1_fight", "LAFAN1", "fight"],
+  ["lafan1_fall_getup", "LAFAN1", "fall and get up"],
+  ["lafan1_jumps", "LAFAN1", "jumps"],
+  ["lafan1_sprint", "LAFAN1", "sprint"],
+  ["lafan1_sports", "LAFAN1", "kicks and sports"],
+  ["100style_kick", "100STYLE", "kick walk"],
+  ["100style_roadrunner", "100STYLE", "roadrunner run"],
+  ["100style_chicken", "100STYLE", "chicken walk"],
+  ["100style_two_foot_jump", "100STYLE", "two-foot jumps"],
+  ["100style_crouched", "100STYLE", "crouched walk"],
+  ["100style_wild_arms", "100STYLE", "wild arms"],
+  ["bones_cartwheel", "BONES-SEED", "cartwheel"],
+  ["bones_hiphop", "BONES-SEED", "hip-hop dance"],
+  ["bones_kozak", "BONES-SEED", "kozak dance"],
+  ["bones_pirouette", "BONES-SEED", "pirouettes"],
+  ["bones_turn_jump", "BONES-SEED", "360 turn jump"],
+  ["bones_sit", "BONES-SEED", "sit down cross-legged"],
+  ["bones_stand_up", "BONES-SEED", "get up from lying"],
+  ["bones_boxing", "BONES-SEED", "shadow boxing"]];
+clipPicker('loco-vids', 'loco-main', 'loco_', LOCO_VIDS);
 clipPicker('hoi-base-clips', 'hoi-base', 'hoi_base_', HOI_BASE);
 
 // Speed bars: one log scale shared by the three tasks (EMR left blank for now).
