@@ -18,9 +18,13 @@ body{margin:0;background:var(--page);color:var(--ink);font-family:'Noto Sans',sa
 .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
 .narrow{max-width:860px;margin:0 auto}
 h1,h2,h3{font-family:'Google Sans',sans-serif;font-weight:500;color:#292929;margin:0}
-section{padding:36px 0}
-h2.sec{font-size:2rem;text-align:center;margin-bottom:18px}
-h3.sub{font-size:1.15rem;text-align:center;color:var(--ink-soft);font-weight:400;margin:22px 0 12px}
+/* sections are spaced apart and split by a hairline; the result panes sit under the sticky task tabs instead */
+section.wrap{padding-top:76px;padding-bottom:76px}
+section:not(.pane){border-top:1px solid var(--rule)}
+section.wrap.pane{padding-top:48px}
+h2.sec{font-size:2rem;text-align:center;margin-bottom:30px}
+h3.sub{font-size:1.15rem;text-align:center;color:var(--ink-soft);font-weight:400;margin:52px 0 14px}
+h2.sec + h3.sub{margin-top:0}
 
 /* header */
 /* the header is the whole first screen; the rest of the page starts on the second */
@@ -114,6 +118,7 @@ pre.bib{background:#f1efe9;border-radius:6px;padding:14px;font:13px/1.5 'Roboto 
 footer{text-align:center;color:var(--ink-soft);font-size:.8rem;padding:24px 0 40px}
 
 @media (max-width:760px){
+  section.wrap{padding-top:52px;padding-bottom:52px}section.wrap.pane{padding-top:36px}h3.sub{margin-top:40px}
   .wordmark{font-size:3.4rem}.title{font-size:1.4rem}
   .stats,.grid4,.cmp{grid-template-columns:repeat(2,1fr)}
   .grid2{grid-template-columns:1fr}
