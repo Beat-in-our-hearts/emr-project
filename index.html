@@ -23,7 +23,12 @@ h2.sec{font-size:2rem;text-align:center;margin-bottom:18px}
 h3.sub{font-size:1.15rem;text-align:center;color:var(--ink-soft);font-weight:400;margin:22px 0 12px}
 
 /* header */
-header{text-align:center;padding:42px 0 8px}
+/* the header is the whole first screen; the rest of the page starts on the second */
+header.wrap{text-align:center;padding:28px 16px 56px;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;position:relative}
+.scroll-cue{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);color:var(--ink-soft);opacity:.75;animation:cue 2s ease-in-out infinite}
+.scroll-cue svg{width:28px;height:28px;display:block;fill:none;stroke:currentColor;stroke-width:2}
+@keyframes cue{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
+@media (prefers-reduced-motion:reduce){.scroll-cue{animation:none}}
 .wordmark{font-family:'Google Sans',sans-serif;font-weight:700;font-size:5.2rem;letter-spacing:-.02em;line-height:1;
   background:linear-gradient(100deg,#1d4f91 0%,#2f6fb2 35%,#e0662f 70%,#c43c2b 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .title{font-size:2.1rem;line-height:1.25;margin:10px auto 0;max-width:900px;color:#4a4a4a;font-weight:400}
@@ -34,8 +39,9 @@ header{text-align:center;padding:42px 0 8px}
 .pill svg{width:16px;height:16px;fill:currentColor}
 
 /* teaser */
-.teaser{margin-top:26px;border-radius:6px;overflow:hidden;background:#1f1f22;box-shadow:var(--shadow)}
-.teaser img{display:block;width:100%}
+.teaser{margin:22px auto 0;width:fit-content;max-width:100%;border-radius:6px;overflow:hidden;background:#1f1f22;box-shadow:var(--shadow)}
+/* on a short window the cover shrinks so title, cover, TL;DR and the stat cards fit one screen */
+.teaser img{display:block;max-width:100%;height:auto;max-height:max(200px,calc(100svh - 580px))}
 .teaser .placeholder{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:#f4f4f2}
 .teaser .placeholder img{aspect-ratio:4/3;object-fit:cover;background:#f4f4f2}
 .tldr{margin:14px 0 0;font-size:.98rem}
@@ -140,9 +146,10 @@ footer{text-align:center;color:var(--ink-soft);font-size:.8rem;padding:24px 0 40
     <div class="stat"><div class="num">&mdash;</div><div class="lbl">Whole-body HOI</div></div>
     <div class="stat"><div class="num">&mdash;</div><div class="lbl">30 M frames, BONES-SEED</div></div>
   </div>
+  <a class="scroll-cue" href="#news" aria-label="Scroll to the rest of the page"><svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7"/></svg></a>
 </header>
 
-<section class="wrap narrow">
+<section class="wrap narrow" id="news">
   <h2 class="sec">News</h2>
   <ul class="news">
     <li>Coming soon.</li>
